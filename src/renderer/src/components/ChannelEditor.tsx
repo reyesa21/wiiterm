@@ -96,6 +96,7 @@ export function ChannelEditor() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={closeEditor}
+            style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
           />
 
           {/* Modal */}
@@ -104,6 +105,7 @@ export function ChannelEditor() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
           >
             <motion.div
               className="bg-wii-surface rounded-wii-lg shadow-wii-hover w-full max-w-md overflow-hidden"
