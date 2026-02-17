@@ -19,7 +19,8 @@ interface AppState {
   // View
   view: ViewMode
   activeChannelId: string | null
-  setView: (view: ViewMode, channelId?: string | null) => void
+  tileRect: { x: number; y: number; w: number; h: number } | null
+  setView: (view: ViewMode, channelId?: string | null, rect?: { x: number; y: number; w: number; h: number } | null) => void
 
   // Pagination
   currentPage: number
@@ -101,10 +102,12 @@ export const useStore = create<AppState>((set, get) => ({
   // View
   view: 'grid',
   activeChannelId: null,
-  setView: (view, channelId) => {
+  tileRect: null,
+  setView: (view, channelId, rect) => {
     set({
       view,
-      activeChannelId: channelId !== undefined ? channelId : get().activeChannelId
+      activeChannelId: channelId !== undefined ? channelId : get().activeChannelId,
+      tileRect: rect !== undefined ? rect : get().tileRect,
     })
   },
 

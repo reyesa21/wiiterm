@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Settings } from 'lucide-react'
 import { Channel } from '@/lib/types'
@@ -13,9 +14,22 @@ export function ChannelTile({ channel, index }: ChannelTileProps) {
   const { setView, sessions, openEditor } = useStore()
   const session = sessions.get(channel.id)
   const isAlive = session?.alive ?? false
+  const tileRef = useRef<HTMLDivElement>(null)
 
   const handleClick = () => {
-    setView('terminal', channel.id)
+    // Capture tile position for Wii zoom animation
+    const el = tileRef.current
+    if (el) {
+      const rect = el.getBoundingClientRect()
+      setView('terminal', channel.id, {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+        w: rect.width,
+        h: rect.height,
+      })
+    } else {
+      setView('terminal', channel.id)
+    }
   }
 
   const handleEdit = (e: React.MouseEvent) => {
@@ -25,6 +39,7 @@ export function ChannelTile({ channel, index }: ChannelTileProps) {
 
   return (
     <motion.div
+      ref={tileRef}
       className="relative bg-wii-surface rounded-wii shadow-wii cursor-pointer group select-none overflow-hidden"
       style={{ aspectRatio: '1' }}
       initial={{ opacity: 0, y: 20 }}

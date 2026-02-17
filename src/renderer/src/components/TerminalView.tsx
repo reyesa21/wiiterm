@@ -60,6 +60,7 @@ export function TerminalView() {
   }, [prevChannel, nextChannel, setView])
 
   const handleBack = () => {
+    // Keep tileRect so exit animation zooms back to the tile
     setView('grid', null)
   }
 
@@ -78,8 +79,8 @@ export function TerminalView() {
 
   return (
     <div className="flex-1 flex flex-col h-full bg-[#1E1E2E]">
-      {/* Terminal top bar */}
-      <div className="flex items-center gap-2 px-3 py-1.5 bg-[#181825] border-b border-[#313244]"
+      {/* Terminal top bar — pl-20 clears macOS traffic lights */}
+      <div className="flex items-center gap-2 pl-20 pr-3 py-1.5 bg-[#181825] border-b border-[#313244]"
         style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
       >
         {/* Back button */}
