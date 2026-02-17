@@ -14,9 +14,14 @@ body {
   font-family: 'Nunito', 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #F8F8F8;
+  background: linear-gradient(180deg, #F2F4F8 0%, #E8EBF0 100%);
   overflow: hidden;
   user-select: none;
+}
+
+/* Wii-style subtle grid pattern on the background */
+.bg-wii-bg {
+  background: linear-gradient(180deg, #F2F4F8 0%, #E8EBF0 100%);
 }
 
 /* Scrollbar styling */

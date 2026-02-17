@@ -7,18 +7,22 @@ import { CHANNELS_PER_PAGE } from '@/lib/constants'
 export function ChannelGrid() {
   const { channels, currentPage, setPage } = useStore()
 
-  // Add one slot for the "+" tile
   const totalSlots = channels.length + 1
   const totalPages = Math.max(1, Math.ceil(totalSlots / CHANNELS_PER_PAGE))
   const startIdx = currentPage * CHANNELS_PER_PAGE
   const pageChannels = channels.slice(startIdx, startIdx + CHANNELS_PER_PAGE)
-
-  // Show "+" tile if there's room on this page
   const showNewTile = pageChannels.length < CHANNELS_PER_PAGE
 
   return (
-    <div className="flex-1 flex flex-col justify-center px-8 py-6">
-      <div className="grid grid-cols-4 gap-4 max-w-[720px] mx-auto w-full">
+    <div
+      className="h-full flex flex-col justify-center px-10 py-6"
+      style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
+    >
+      {/* Grid — no-drag so tiles are clickable */}
+      <div
+        className="grid grid-cols-4 gap-5 max-w-[800px] mx-auto w-full"
+        style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+      >
         {pageChannels.map((channel, i) => (
           <ChannelTile key={channel.id} channel={channel} index={i} />
         ))}
@@ -27,7 +31,9 @@ export function ChannelGrid() {
         )}
       </div>
 
-      <PageDots total={totalPages} current={currentPage} onChange={setPage} />
+      <div style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
+        <PageDots total={totalPages} current={currentPage} onChange={setPage} />
+      </div>
     </div>
   )
 }

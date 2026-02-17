@@ -17,7 +17,6 @@ export function ChannelTile({ channel, index }: ChannelTileProps) {
   const tileRef = useRef<HTMLDivElement>(null)
 
   const handleClick = () => {
-    // Capture tile position for Wii zoom animation
     const el = tileRef.current
     if (el) {
       const rect = el.getBoundingClientRect()
@@ -40,60 +39,82 @@ export function ChannelTile({ channel, index }: ChannelTileProps) {
   return (
     <motion.div
       ref={tileRef}
-      className="relative bg-wii-surface rounded-wii shadow-wii cursor-pointer group select-none overflow-hidden"
-      style={{ aspectRatio: '1' }}
-      initial={{ opacity: 0, y: 20 }}
+      className="flex flex-col items-center gap-1.5 cursor-pointer group select-none"
+      initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04, ...SPRING.bouncy }}
-      whileHover={{
-        scale: 1.08,
-        rotateZ: WOBBLE_KEYFRAMES,
-        boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-        transition: {
-          scale: SPRING.stiff,
-          rotateZ: { duration: 0.5, ease: 'easeInOut' },
-        }
-      }}
-      whileTap={{ scale: 0.95 }}
       onClick={handleClick}
     >
-      {/* Color accent bar */}
-      <div
-        className="absolute top-0 left-0 right-0 h-1 rounded-t-wii"
-        style={{ backgroundColor: channel.color }}
-      />
-
-      {/* Status dot */}
-      {session && (
-        <div className="absolute top-2.5 right-2.5">
-          <div
-            className={`w-2.5 h-2.5 rounded-full ${
-              isAlive ? 'bg-wii-green' : 'bg-wii-muted'
-            }`}
-          />
-        </div>
-      )}
-
-      {/* Edit button */}
-      <button
-        onClick={handleEdit}
-        className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover:bg-black/5"
+      {/* Tile body */}
+      <motion.div
+        className="relative w-full rounded-2xl overflow-hidden"
+        style={{ aspectRatio: '1' }}
+        whileHover={{
+          scale: 1.08,
+          rotateZ: WOBBLE_KEYFRAMES,
+          transition: {
+            scale: SPRING.stiff,
+            rotateZ: { duration: 0.5, ease: 'easeInOut' },
+          }
+        }}
+        whileTap={{ scale: 0.95 }}
       >
-        <Settings size={14} className="text-wii-muted" />
-      </button>
+        {/* Background gradient — Wii channel style */}
+        <div
+          className="absolute inset-0 rounded-2xl"
+          style={{
+            background: `linear-gradient(145deg, ${channel.color}22 0%, ${channel.color}08 100%)`,
+            border: '1px solid rgba(255,255,255,0.8)',
+            boxShadow: `0 2px 12px ${channel.color}18, 0 1px 3px rgba(0,0,0,0.06)`,
+          }}
+        />
 
-      {/* Content */}
-      <div className="flex flex-col items-center justify-center h-full p-3 pt-4">
-        <span className="text-3xl mb-2">{channel.icon}</span>
-        <span className="text-xs font-sans font-semibold text-wii-text text-center leading-tight truncate w-full">
-          {channel.name}
-        </span>
-        {channel.config.cwd && (
-          <span className="text-[10px] text-wii-muted font-mono mt-1 truncate w-full text-center">
-            {channel.config.cwd.replace(/^\/Users\/[^/]+/, '~')}
-          </span>
-        )}
-      </div>
+        {/* Inner white card with shine */}
+        <div className="absolute inset-[3px] rounded-[14px] bg-white overflow-hidden">
+          {/* Shine gradient — top highlight like real Wii tiles */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 40%, rgba(240,240,240,0.2) 100%)',
+            }}
+          />
+
+          {/* Status dot */}
+          {session && (
+            <div className="absolute top-3 right-3 z-10">
+              <div className={`w-3 h-3 rounded-full shadow-sm ${
+                isAlive
+                  ? 'bg-wii-green shadow-wii-green/40'
+                  : 'bg-gray-300'
+              }`} />
+            </div>
+          )}
+
+          {/* Edit button */}
+          <button
+            onClick={handleEdit}
+            className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-black/5"
+          >
+            <Settings size={14} className="text-gray-400" />
+          </button>
+
+          {/* Icon — big and centered */}
+          <div className="relative flex items-center justify-center h-full">
+            <span className="text-5xl drop-shadow-sm">{channel.icon}</span>
+          </div>
+        </div>
+
+        {/* Colored bottom accent — like Wii channel color strip */}
+        <div
+          className="absolute bottom-0 left-[3px] right-[3px] h-[6px] rounded-b-[14px]"
+          style={{ backgroundColor: channel.color, opacity: 0.7 }}
+        />
+      </motion.div>
+
+      {/* Label below tile — Wii style */}
+      <span className="text-[11px] font-sans font-bold text-gray-600 text-center leading-tight truncate w-full px-1">
+        {channel.name}
+      </span>
     </motion.div>
   )
 }

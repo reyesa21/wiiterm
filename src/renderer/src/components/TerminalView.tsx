@@ -9,7 +9,6 @@ export function TerminalView() {
   const channel = channels.find(c => c.id === activeChannelId)
   const session = activeChannelId ? sessions.get(activeChannelId) : undefined
 
-  // Find prev/next channels for navigation
   const currentIndex = channels.findIndex(c => c.id === activeChannelId)
   const prevChannel = currentIndex > 0 ? channels[currentIndex - 1] : null
   const nextChannel = currentIndex < channels.length - 1 ? channels[currentIndex + 1] : null
@@ -26,7 +25,6 @@ export function TerminalView() {
       env: channel.config.env,
     })
 
-    // Send startup command if configured
     if (channel.config.startupCommand) {
       setTimeout(() => {
         window.api.ptyWrite(newSession.id, channel.config.startupCommand + '\n')
@@ -34,14 +32,12 @@ export function TerminalView() {
     }
   }, [channel, createSession])
 
-  // Auto-spawn session on first view if none exists
   useEffect(() => {
     if (channel && !session) {
       spawnSession()
     }
   }, [channel, session, spawnSession])
 
-  // Keyboard navigation: Cmd+[ / Cmd+] to switch channels
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.metaKey && e.key === '[' && prevChannel) {
@@ -60,7 +56,6 @@ export function TerminalView() {
   }, [prevChannel, nextChannel, setView])
 
   const handleBack = () => {
-    // Keep tileRect so exit animation zooms back to the tile
     setView('grid', null)
   }
 
@@ -79,83 +74,94 @@ export function TerminalView() {
 
   return (
     <div className="flex-1 flex flex-col h-full bg-[#1E1E2E]">
-      {/* Terminal top bar — pl-20 clears macOS traffic lights */}
-      <div className="flex items-center gap-2 pl-20 pr-3 py-1.5 bg-[#181825] border-b border-[#313244]"
+      {/* Terminal top bar — big touch targets for Wiimote */}
+      <div className="flex items-center gap-1 pl-20 pr-3 py-1 bg-[#181825] border-b border-[#313244]"
         style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
       >
-        {/* Back button */}
+        {/* Back button — large */}
         <motion.button
           onClick={handleBack}
-          className="flex items-center gap-1 text-[#CDD6F4]/60 hover:text-[#CDD6F4] transition-colors text-sm font-sans px-1.5 py-1 rounded hover:bg-[#CDD6F4]/10"
-          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-1.5 text-[#CDD6F4]/70 hover:text-[#CDD6F4] transition-colors
+            text-sm font-sans font-semibold px-3 py-2 rounded-lg hover:bg-[#CDD6F4]/10"
+          whileTap={{ scale: 0.9 }}
           style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
         >
-          <ArrowLeft size={14} />
+          <ArrowLeft size={18} />
         </motion.button>
 
-        {/* Prev channel */}
+        {/* Prev */}
         <motion.button
           onClick={() => prevChannel && handleSwitchChannel(prevChannel.id)}
-          className={`text-[#CDD6F4]/40 transition-colors px-0.5 py-1 rounded ${
-            prevChannel ? 'hover:text-[#CDD6F4] hover:bg-[#CDD6F4]/10 cursor-pointer' : 'opacity-30 cursor-default'
+          className={`p-2 rounded-lg transition-colors ${
+            prevChannel ? 'text-[#CDD6F4]/50 hover:text-[#CDD6F4] hover:bg-[#CDD6F4]/10' : 'text-[#CDD6F4]/15'
           }`}
-          whileTap={prevChannel ? { scale: 0.9 } : {}}
+          whileTap={prevChannel ? { scale: 0.85 } : {}}
           style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
           disabled={!prevChannel}
         >
-          <ChevronLeft size={16} />
+          <ChevronLeft size={20} />
         </motion.button>
 
-        {/* Channel tabs */}
-        <div className="flex-1 flex items-center justify-center gap-1 overflow-x-auto"
+        {/* Channel tabs — big icons */}
+        <div className="flex-1 flex items-center justify-center gap-0.5 overflow-x-auto"
           style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
         >
           {channels.map(ch => {
             const chSession = sessions.get(ch.id)
             const isActive = ch.id === activeChannelId
             return (
-              <button
+              <motion.button
                 key={ch.id}
                 onClick={() => handleSwitchChannel(ch.id)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-sans transition-all whitespace-nowrap ${
+                className={`relative flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-sans transition-all whitespace-nowrap ${
                   isActive
-                    ? 'bg-[#CDD6F4]/15 text-[#CDD6F4] font-semibold'
-                    : 'text-[#CDD6F4]/40 hover:text-[#CDD6F4]/70 hover:bg-[#CDD6F4]/5'
+                    ? 'bg-[#CDD6F4]/15 text-[#CDD6F4] font-bold'
+                    : 'text-[#CDD6F4]/40 hover:text-[#CDD6F4]/80 hover:bg-[#CDD6F4]/5'
                 }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <span className="text-sm">{ch.icon}</span>
-                <span>{ch.name}</span>
+                <span className="text-xl">{ch.icon}</span>
+                <span className="text-xs">{ch.name}</span>
                 {chSession && (
-                  <div className={`w-1.5 h-1.5 rounded-full ${chSession.alive ? 'bg-wii-green' : 'bg-wii-muted'}`} />
+                  <div className={`w-2 h-2 rounded-full ${chSession.alive ? 'bg-wii-green' : 'bg-gray-500'}`} />
                 )}
-              </button>
+                {/* Active underline */}
+                {isActive && (
+                  <motion.div
+                    className="absolute bottom-0 left-2 right-2 h-[2px] bg-wii-accent rounded-full"
+                    layoutId="activeTab"
+                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                  />
+                )}
+              </motion.button>
             )
           })}
         </div>
 
-        {/* Next channel */}
+        {/* Next */}
         <motion.button
           onClick={() => nextChannel && handleSwitchChannel(nextChannel.id)}
-          className={`text-[#CDD6F4]/40 transition-colors px-0.5 py-1 rounded ${
-            nextChannel ? 'hover:text-[#CDD6F4] hover:bg-[#CDD6F4]/10 cursor-pointer' : 'opacity-30 cursor-default'
+          className={`p-2 rounded-lg transition-colors ${
+            nextChannel ? 'text-[#CDD6F4]/50 hover:text-[#CDD6F4] hover:bg-[#CDD6F4]/10' : 'text-[#CDD6F4]/15'
           }`}
-          whileTap={nextChannel ? { scale: 0.9 } : {}}
+          whileTap={nextChannel ? { scale: 0.85 } : {}}
           style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
           disabled={!nextChannel}
         >
-          <ChevronRight size={16} />
+          <ChevronRight size={20} />
         </motion.button>
 
-        {/* Restart */}
+        {/* Restart — large */}
         <motion.button
           onClick={handleRestart}
-          className="text-[#CDD6F4]/40 hover:text-[#CDD6F4] transition-colors px-1.5 py-1 rounded hover:bg-[#CDD6F4]/10"
+          className="text-[#CDD6F4]/40 hover:text-[#CDD6F4] transition-colors p-2 rounded-lg hover:bg-[#CDD6F4]/10"
           whileHover={{ rotate: -180 }}
-          whileTap={{ scale: 0.9 }}
+          whileTap={{ scale: 0.85 }}
           transition={{ duration: 0.3 }}
           style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
         >
-          <RotateCcw size={14} />
+          <RotateCcw size={18} />
         </motion.button>
       </div>
 
