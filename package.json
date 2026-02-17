@@ -1,7 +1,7 @@
 {
-  "name": "wii-term",
+  "name": "wiiterm",
   "version": "1.0.0",
-  "description": "Wii Menu Terminal Emulator",
+  "description": "WiiTerm - Wii Menu Terminal Emulator",
   "main": "./out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
@@ -11,8 +11,8 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
-    "appId": "com.wii-term.app",
-    "productName": "Wii Term",
+    "appId": "com.wiiterm.app",
+    "productName": "WiiTerm",
     "mac": {
       "icon": "resources/icon.icns",
       "category": "public.app-category.developer-tools",
