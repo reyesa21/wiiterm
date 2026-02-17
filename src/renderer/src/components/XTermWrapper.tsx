@@ -14,7 +14,7 @@ export function XTermWrapper({ sessionId, channelId }: XTermWrapperProps) {
   return (
     <div
       ref={containerRef}
-      className="w-full h-full"
+      className="w-full h-full bg-[#F2F4F8]"
       style={{ padding: '8px 8px 8px 12px' }}
     />
   )

@@ -78,16 +78,16 @@ export function TerminalView() {
   if (!channel) return null
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#1E1E2E]">
+    <div className="flex-1 flex flex-col h-full bg-[#F2F4F8]">
       {/* Terminal top bar — big touch targets for Wiimote */}
-      <div className="flex items-center gap-1 pl-20 pr-3 py-1 bg-[#181825] border-b border-[#313244]"
+      <div className="flex items-center gap-1 pl-20 pr-3 py-1 bg-[#E8EBF0] border-b border-wii-border"
         style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
       >
         {/* Back button — large */}
         <motion.button
           onClick={handleBack}
-          className="flex items-center gap-1.5 text-[#CDD6F4]/70 hover:text-[#CDD6F4] transition-colors
-            text-sm font-sans font-semibold px-3 py-2 rounded-lg hover:bg-[#CDD6F4]/10"
+          className="flex items-center gap-1.5 text-wii-text/70 hover:text-wii-text transition-colors
+            text-sm font-sans font-semibold px-3 py-2 rounded-lg hover:bg-black/5"
           whileTap={{ scale: 0.9 }}
           style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
         >
@@ -98,7 +98,7 @@ export function TerminalView() {
         <motion.button
           onClick={() => prevChannel && handleSwitchChannel(prevChannel.id)}
           className={`p-2 rounded-lg transition-colors ${
-            prevChannel ? 'text-[#CDD6F4]/50 hover:text-[#CDD6F4] hover:bg-[#CDD6F4]/10' : 'text-[#CDD6F4]/15'
+            prevChannel ? 'text-wii-text/50 hover:text-wii-text hover:bg-black/5' : 'text-wii-text/15'
           }`}
           whileTap={prevChannel ? { scale: 0.85 } : {}}
           style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
@@ -120,8 +120,8 @@ export function TerminalView() {
                 onClick={() => handleSwitchChannel(ch.id)}
                 className={`relative flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-sans transition-all whitespace-nowrap ${
                   isActive
-                    ? 'bg-[#CDD6F4]/15 text-[#CDD6F4] font-bold'
-                    : 'text-[#CDD6F4]/40 hover:text-[#CDD6F4]/80 hover:bg-[#CDD6F4]/5'
+                    ? 'bg-wii-accent/10 text-wii-text font-bold'
+                    : 'text-wii-text/40 hover:text-wii-text/80 hover:bg-black/3'
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -148,7 +148,7 @@ export function TerminalView() {
         <motion.button
           onClick={() => nextChannel && handleSwitchChannel(nextChannel.id)}
           className={`p-2 rounded-lg transition-colors ${
-            nextChannel ? 'text-[#CDD6F4]/50 hover:text-[#CDD6F4] hover:bg-[#CDD6F4]/10' : 'text-[#CDD6F4]/15'
+            nextChannel ? 'text-wii-text/50 hover:text-wii-text hover:bg-black/5' : 'text-wii-text/15'
           }`}
           whileTap={nextChannel ? { scale: 0.85 } : {}}
           style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
@@ -160,7 +160,7 @@ export function TerminalView() {
         {/* Restart — large */}
         <motion.button
           onClick={handleRestart}
-          className="text-[#CDD6F4]/40 hover:text-[#CDD6F4] transition-colors p-2 rounded-lg hover:bg-[#CDD6F4]/10"
+          className="text-wii-text/40 hover:text-wii-text transition-colors p-2 rounded-lg hover:bg-black/5"
           whileHover={{ rotate: -180 }}
           whileTap={{ scale: 0.85 }}
           transition={{ duration: 0.3 }}
