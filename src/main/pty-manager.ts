@@ -31,12 +31,17 @@ export class PtyManager {
       this.kill(id)
     }
 
+    // Clean env: strip Claude Code session vars so shells don't think they're nested
+    const cleanEnv = { ...process.env }
+    delete cleanEnv.CLAUDECODE
+    delete cleanEnv.CLAUDE_CODE_SESSION
+
     const proc = pty.spawn(shell, [], {
       name: 'xterm-256color',
       cols,
       rows,
       cwd,
-      env: { ...process.env, ...env } as Record<string, string>
+      env: { ...cleanEnv, ...env } as Record<string, string>
     })
 
     const session: PtySession = {
