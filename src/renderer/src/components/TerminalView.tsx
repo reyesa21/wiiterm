@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useStore } from '@/stores/useStore'
@@ -8,32 +8,35 @@ export function TerminalView() {
   const { activeChannelId, channels, sessions, setView, createSession, showToast } = useStore()
   const channel = channels.find(c => c.id === activeChannelId)
   const session = activeChannelId ? sessions.get(activeChannelId) : undefined
+  const spawningRef = useRef<string | null>(null)
 
   const currentIndex = channels.findIndex(c => c.id === activeChannelId)
   const prevChannel = currentIndex > 0 ? channels[currentIndex - 1] : null
   const nextChannel = currentIndex < channels.length - 1 ? channels[currentIndex + 1] : null
 
-  const spawnSession = useCallback(async () => {
-    if (!channel) return
+  const spawnSession = useCallback(async (channelToSpawn = channel) => {
+    if (!channelToSpawn) return
 
-    const newSession = createSession(channel.id)
+    const newSession = createSession(channelToSpawn.id)
 
     await window.api.ptyCreate({
       id: newSession.id,
-      shell: channel.config.shell,
-      cwd: channel.config.cwd,
-      env: channel.config.env,
+      shell: channelToSpawn.config.shell,
+      cwd: channelToSpawn.config.cwd,
+      env: channelToSpawn.config.env,
     })
 
-    if (channel.config.startupCommand) {
+    if (channelToSpawn.config.startupCommand) {
       setTimeout(() => {
-        window.api.ptyWrite(newSession.id, channel.config.startupCommand + '\n')
+        window.api.ptyWrite(newSession.id, channelToSpawn.config.startupCommand + '\n')
       }, 300)
     }
   }, [channel, createSession])
 
+  // Auto-spawn — ref guard prevents StrictMode double-fire
   useEffect(() => {
-    if (channel && !session) {
+    if (channel && !session && spawningRef.current !== channel.id) {
+      spawningRef.current = channel.id
       spawnSession()
     }
   }, [channel, session, spawnSession])
@@ -62,7 +65,9 @@ export function TerminalView() {
   const handleRestart = async () => {
     if (!session || !channel) return
     await window.api.ptyKill(session.id)
+    spawningRef.current = null
     await spawnSession()
+    spawningRef.current = channel.id
     showToast('Session restarted', 'info')
   }
 
