@@ -14,55 +14,57 @@ function App() {
     loadChannels()
   }, [loadChannels])
 
-  // Compute transform origin from the tile that was clicked
   const origin = useMemo(() => {
     if (!tileRect) return '50% 50%'
     return `${tileRect.x}px ${tileRect.y}px`
   }, [tileRect])
 
+  const isTerminal = view === 'terminal'
+
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden bg-wii-bg">
-      {/* Top bar — only visible in grid view */}
-      <AnimatePresence>
-        {view === 'grid' && (
-          <motion.div
-            key="topbar"
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.2 }}
-          >
-            <TopBar />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Top bar */}
+      <motion.div
+        initial={false}
+        animate={{
+          height: isTerminal ? 0 : 48,
+          opacity: isTerminal ? 0 : 1,
+        }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        className="overflow-hidden flex-shrink-0"
+      >
+        <TopBar />
+      </motion.div>
 
-      {/* Main content */}
+      {/* Main content — grid is always mounted, terminal overlays it */}
       <div className="flex-1 overflow-hidden relative">
-        <AnimatePresence mode="wait">
-          {view === 'grid' ? (
-            <motion.div
-              key="grid"
-              className="h-full"
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.85 }}
-              transition={{
-                duration: 0.35,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              style={{ transformOrigin: origin }}
-            >
-              <ChannelGrid />
-            </motion.div>
-          ) : (
+        {/* Grid — always rendered, fades when terminal is open */}
+        <motion.div
+          className="absolute inset-0"
+          initial={false}
+          animate={{
+            opacity: isTerminal ? 0 : 1,
+            scale: isTerminal ? 0.92 : 1,
+            filter: isTerminal ? 'blur(8px)' : 'blur(0px)',
+          }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            pointerEvents: isTerminal ? 'none' : 'auto',
+          }}
+        >
+          <ChannelGrid />
+        </motion.div>
+
+        {/* Terminal — overlays grid with zoom-in from tile */}
+        <AnimatePresence>
+          {isTerminal && (
             <motion.div
               key="terminal"
-              className="absolute inset-0"
+              className="absolute inset-0 z-10"
               initial={{
                 opacity: 0,
-                scale: tileRect ? 0.15 : 0.9,
-                borderRadius: '12px',
+                scale: tileRect ? 0.12 : 0.9,
+                borderRadius: '16px',
               }}
               animate={{
                 opacity: 1,
@@ -71,8 +73,8 @@ function App() {
               }}
               exit={{
                 opacity: 0,
-                scale: tileRect ? 0.15 : 0.9,
-                borderRadius: '12px',
+                scale: tileRect ? 0.12 : 0.9,
+                borderRadius: '16px',
               }}
               transition={{
                 duration: 0.4,

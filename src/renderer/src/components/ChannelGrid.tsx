@@ -15,7 +15,7 @@ export function ChannelGrid() {
 
   return (
     <div
-      className="h-full flex flex-col justify-center px-10 py-6"
+      className="h-full flex flex-col px-10 pt-8 pb-6"
       style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
     >
       {/* Grid — no-drag so tiles are clickable */}
